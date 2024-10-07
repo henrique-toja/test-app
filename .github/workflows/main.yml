@@ -1,0 +1,36 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main  # Ou a branch principal do seu repositório
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Configuração do Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Ou a versão que você está usando
+
+      # Instalação de dependências
+      - name: Install dependencies
+        run: npm install
+
+      # Build do projeto
+      - name: Build the project
+        run: npm run build
+
+      # Deploy para GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.react_test_token }}  # Usando o token que você criou
+          publish_dir: ./build
