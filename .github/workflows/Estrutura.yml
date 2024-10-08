@@ -1,0 +1,120 @@
+name: Create Android Project Structure
+
+on:
+  workflow_dispatch: # Permite iniciar manualmente o workflow
+
+jobs:
+  create_structure:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do repositório
+      - name: Check out this repository
+        uses: actions/checkout@v2
+
+      # Criar a estrutura de diretórios e arquivos
+      - name: Create Android project structure
+        run: |
+          # Criar diretórios
+          mkdir -p app/src/main/java/com/seu_pacote
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
+
+          # Criar build.gradle do aplicativo
+          cat <<EOF > app/build.gradle
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        applicationId "com.seu_pacote"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:30.0.0'
+}
+EOF
+
+          # Criar AndroidManifest.xml
+          cat <<EOF > app/src/main/AndroidManifest.xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.seu_pacote">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+EOF
+
+          # Criar MainActivity.java
+          cat <<EOF > app/src/main/java/com/seu_pacote/MainActivity.java
+package com.seu_pacote;
+
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+}
+EOF
+
+          # Criar activity_main.xml
+          cat <<EOF > app/src/main/res/layout/activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!" />
+</LinearLayout>
+EOF
+
+          # Criar strings.xml
+          cat <<EOF > app/src/main/res/values/strings.xml
+<resources>
+    <string name="app_name">Projetosuperslim</string>
+</resources>
+EOF
+
+          # Criar settings.gradle
+          cat <<EOF > settings.gradle
+include ':app'
+EOF
+
+      # Fazer commit das alterações
+      - name: Commit changes
+        run: |
+          git config --local user.name "github-actions"
+          git config --local user.email "actions@github.com"
+          git add .
+          git commit -m "Add Android project structure" || echo "No changes to commit"
+          git push
