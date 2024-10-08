@@ -16,5 +16,14 @@ jobs:
       - name: Clone Projetosuperslim repository
         run: |
           git clone https://github.com/henrique-toja/Projetosuperslim.git temp-repo
-          mv temp-repo/* . # Move todos os arquivos para o diretório atual
-          rmdir temp-repo # Remove o diretório temporário
+
+      # Mover arquivos do repositório clonado para o repositório de teste
+      - name: Move cloned files
+        run: |
+          mv temp-repo/* . || echo "No files to move"
+          mv temp-repo/.* . || echo "No hidden files to move"
+          
+      # Remover o diretório temporário
+      - name: Clean up
+        run: |
+          rmdir temp-repo || echo "Could not remove temp-repo. It might not be empty."
